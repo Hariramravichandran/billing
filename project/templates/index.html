@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 800px;
+            margin: auto;
+            border: 1px solid black;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .input-row label {
+            width: 150px;
+            text-align: right;
+        }
+        .input-row input {
+            width: 150px;
+            padding: 5px;
+        }
+        .denominations {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .denominations .row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .denominations label {
+            width: 50px;
+            text-align: right;
+        }
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 5px 15px;
+            border: 1px solid gray;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: lightgreen;
+            border: 1px solid green;
+        }
+        .hidden {
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid black;
+            text-align: center;
+            padding: 8px;
+        }
+        th {
+            background-color: lightgray;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Page 1: Billing Page -->
+    <div id="page1" class="container">
+        <h2 style="text-align: center;">Billing Page</h2>
+
+        <!-- Customer Email -->
+        <div class="section">
+            <div class="input-row">
+                <label>Customer Email</label>
+                <input type="email" id="customerEmail" placeholder="Email ID">
+            </div>
+        </div>
+
+        <!-- Bill Section -->
+        <div class="section">
+            <h3>Bill Section</h3>
+            <div id="billSection">
+                <div class="input-row product-row">
+                    <input type="text" class="product-id" placeholder="Product ID">
+                    <input type="number" class="product-quantity" placeholder="Quantity">
+                </div>
+            </div>
+            <button class="btn" onclick="addProductRow()">Add New</button>
+        </div>
+
+        <hr>
+
+        <!-- Denominations Section -->
+        <!--<div class="section">
+            <h3>Denominations</h3>
+            <div class="denominations">
+                <div class="row"><label>500</label> <input type="number" class="denomination" data-value="500" placeholder="Count"></div>
+                <div class="row"><label>50</label> <input type="number" class="denomination" data-value="50" placeholder="Count"></div>
+                <div class="row"><label>20</label> <input type="number" class="denomination" data-value="20" placeholder="Count"></div>
+                <div class="row"><label>10</label> <input type="number" class="denomination" data-value="10" placeholder="Count"></div>
+                <div class="row"><label>5</label> <input type="number" class="denomination" data-value="5" placeholder="Count"></div>
+                <div class="row"><label>2</label> <input type="number" class="denomination" data-value="2" placeholder="Count"></div>
+                <div class="row"><label>1</label> <input type="number" class="denomination" data-value="1" placeholder="Count"></div>
+            </div>
+        </div>-->
+
+        <div class="buttons">
+            <button class="btn">Cancel</button>
+            <button class="btn btn-primary" onclick="showPage2()">Next</button>
+        </div>
+    </div>
+    
+    <!-- Page 2: Invoice Summary -->
+    <div id="page2" class="container hidden">
+        <h2 style="text-align: center;">Billing Summary</h2>
+
+        <p><strong>Customer Email:</strong> <span id="summaryEmail"></span></p>
+
+        <h3>Bill Section</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody id="summaryProducts"></tbody>
+        </table>
+
+        <h3>Denominations Used</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Denomination</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody id="summaryDenominations"></tbody>
+        </table>
+
+        <div class="buttons">
+            <button class="btn" onclick="showPage1()">Back</button>
+            <button class="btn btn-primary">Confirm</button>
+        </div>
+    </div>
+
+    <script>
+        function addProductRow() {
+            let billSection = document.getElementById("billSection");
+            let newRow = document.createElement("div");
+            newRow.classList.add("input-row", "product-row");
+            newRow.innerHTML = `
+                <input type="text" class="product-id" placeholder="Product ID">
+                <input type="number" class="product-quantity" placeholder="Quantity">
+            `;
+            billSection.appendChild(newRow);
+        }
+
+        function showPage2() {
+            // Get customer email
+            let email = document.getElementById("customerEmail").value;
+            document.getElementById("summaryEmail").textContent = email;
+
+            // Get product details
+            let productRows = document.querySelectorAll(".product-row");
+            let productSummary = document.getElementById("summaryProducts");
+            productSummary.innerHTML = "";
+
+            productRows.forEach(row => {
+                let productId = row.querySelector(".product-id").value;
+                let quantity = row.querySelector(".product-quantity").value;
+
+                if (productId && quantity) {
+                    let newRow = document.createElement("tr");
+                    newRow.innerHTML = `<td>${productId}</td><td>${quantity}</td>`;
+                    productSummary.appendChild(newRow);
+                }
+            });
+
+            // Get denominations
+            let denominationInputs = document.querySelectorAll(".denomination");
+            let denomSummary = document.getElementById("summaryDenominations");
+            denomSummary.innerHTML = "";
+
+            denominationInputs.forEach(input => {
+                let denomValue = input.dataset.value;
+                let count = input.value;
+
+                if (count > 0) {
+                    let newRow = document.createElement("tr");
+                    newRow.innerHTML = `<td>${denomValue}</td><td>${count}</td>`;
+                    denomSummary.appendChild(newRow);
+                }
+            });
+
+            // Show Page 2
+            document.getElementById("page1").classList.add("hidden");
+            document.getElementById("page2").classList.remove("hidden");
+        }
+
+        function showPage1() {
+            document.getElementById("page2").classList.add("hidden");
+            document.getElementById("page1").classList.remove("hidden");
+        }
+    </script>
+
+</body>
+</html>
+
